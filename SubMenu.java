@@ -1,7 +1,11 @@
 package game;
 
 import javafx.scene.layout.VBox;
-
+/**
+ * 
+ * @author FerrariHD
+ *
+ */
 public class SubMenu extends VBox {
   public SubMenu(MenuItem... items) {
     setSpacing(24);

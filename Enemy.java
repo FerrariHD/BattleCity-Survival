@@ -7,7 +7,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
-
+/**
+ * AI and autoPlayer
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Enemy extends Pane {
   Image tankImg = new Image(getClass()
       .getResourceAsStream("NES_-_Battle_City_-_General_Sprites.png"));

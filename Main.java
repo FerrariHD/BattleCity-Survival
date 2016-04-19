@@ -10,6 +10,12 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 
+/**
+ * Main class
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Main extends Application {
 
   public static int SCREEN_WIDTH = 1020;
@@ -26,7 +32,9 @@ public class Main extends Application {
    */
   @Override
   public void start(Stage primaryStage) {
+    // load all sounds
     music.initSound();
+    // choose mainMenuMusic
     Music.chooseMusic(0);
     Pane root = new Pane();
     Game game = new Game();
@@ -53,9 +61,9 @@ public class Main extends Application {
      * particles
      */
     Media media = new Media(getClass().getResource("test.mp4").toString());
-    MediaPlayer player = new MediaPlayer(media);
-    player.setCycleCount(MediaPlayer.INDEFINITE);
-    MediaView view = new MediaView(player);
+    MediaPlayer particles = new MediaPlayer(media);
+    particles.setCycleCount(MediaPlayer.INDEFINITE);
+    MediaView view = new MediaView(particles);
     view.setScaleX(1.5);
     view.setScaleY(1.5);
     view.setOpacity(0.075);
@@ -63,8 +71,7 @@ public class Main extends Application {
     root.getChildren().add(imgRectangle);
     root.getChildren().add(imgLogo);
     root.getChildren().add(view);
-
-    player.play();
+    particles.play();
 
     MenuItem newGame = new MenuItem("НОВАЯ ИГРА");
     MenuItem keys = new MenuItem("УПРАВЛЕНИЕ");

@@ -1,10 +1,20 @@
 package game;
 
+/**
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Spawner {
 
   private int spawnTimer;
   private int access;
 
+  /**
+   * chance ~66.7%
+   * 
+   * @return
+   */
   public boolean addNewEnemy() {
     spawnTimer++;
     if (spawnTimer >= Game.spawnSpeed) {

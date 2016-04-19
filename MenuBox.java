@@ -1,7 +1,11 @@
 package game;
 
 import javafx.scene.layout.Pane;
-
+/**
+ * 
+ * @author FerrariHD
+ *
+ */
 public class MenuBox extends Pane {
   static SubMenu subMenu;
 

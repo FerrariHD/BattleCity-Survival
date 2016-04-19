@@ -4,6 +4,12 @@ import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
+/**
+ * our music and sound effects
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Music {
 
   static MediaPlayer mediaplayer;
@@ -72,6 +78,9 @@ public class Music {
     enterSound.play();
   }
 
+  /**
+   * when we click "back"
+   */
   public static void returnSound() {
     returnSound.play();
   }

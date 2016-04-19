@@ -6,7 +6,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
-
+/**
+ * cut blocks from sprite list
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Block extends Pane {
   Image blocksImg = new Image(getClass()
       .getResourceAsStream("NES_-_Battle_City_-_General_Sprites.png"));
@@ -16,6 +21,12 @@ public class Block extends Pane {
     BRICK, WALL, GRASS, WATER
   }
 
+  /**
+   * 
+   * @param blockType
+   * @param x = setTranslateX
+   * @param y = setTranslateY
+   */
   public Block(BlockType blockType, int x, int y) {
     block = new ImageView(blocksImg);
     block.setFitWidth(Game.BLOCK_SIZE);

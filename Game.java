@@ -16,12 +16,16 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/**
+ * Game module
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Game {
   public static ArrayList<Block> platforms = new ArrayList<>();
   private HashMap<KeyCode, Boolean> keys = new HashMap<>();
 
-  Main main = new Main();
-  
   public static final int BLOCK_SIZE = 30;
   public static final int TANK_SIZE = 25;
 
@@ -56,13 +60,15 @@ public class Game {
       new Image(getClass().getResourceAsStream("GAME OVER.png"));
   ImageView gameOverView = new ImageView(gameOverImg);
 
-  Rectangle pauseBG = new Rectangle(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.BLACK);
+  Rectangle pauseBG =
+      new Rectangle(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.BLACK);
 
   /**
    * random map and GUI
    */
   private void initContent() {
-    Rectangle bg = new Rectangle(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.BLACK);
+    Rectangle bg =
+        new Rectangle(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.BLACK);
     pauseBG.setOpacity(0.5);
     HealthLabel = new Label("Health: 100");
     ScoreLabel = new Label("Score: 0");
@@ -107,6 +113,7 @@ public class Game {
       }
 
     }
+    // choose GameMusic
     Music.chooseMusic(1);
     appRoot.getChildren().addAll(gameRoot);
   }
@@ -361,6 +368,9 @@ public class Game {
 
   }
 
+  /**
+   * pause GUI
+   */
   public void pause() {
     timer.stop();
     Music.activateEngineSound(false);
@@ -381,6 +391,9 @@ public class Game {
     gameRoot.getChildren().addAll(pauseBG, pauseMenu);
   }
 
+  /**
+   * GameOver GUI
+   */
   public void gameOver() {
     timer.stop();
     Music.activateEngineSound(false);
@@ -395,6 +408,6 @@ public class Game {
     });
     gameRoot.getChildren().addAll(gameOverView, gameOverMenu);
   }
-  
+
 }
 
