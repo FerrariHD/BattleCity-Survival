@@ -20,6 +20,8 @@ public class Game {
   public static ArrayList<Block> platforms = new ArrayList<>();
   private HashMap<KeyCode, Boolean> keys = new HashMap<>();
 
+  Main main = new Main();
+  
   public static final int BLOCK_SIZE = 30;
   public static final int TANK_SIZE = 25;
 
@@ -30,11 +32,19 @@ public class Game {
   public Enemy autoPlayer;
   public Spawner spawn = new Spawner();
 
+  public int maxAmountOfBots = 3;
+
+  public int damage = 50;
+
+  public int movementSpeed = 3;
+
   private int newBlock;
-  public int spawnSpeed;
+  public static int spawnSpeed = 200;
 
   private Label ScoreLabel;
   private Label HealthLabel;
+
+  public static String gameMode;
 
   public int gameScore = 0;
 
@@ -42,14 +52,18 @@ public class Game {
   public ArrayList<Shell> shells;
   private AnimationTimer timer;
 
-  Image tankImg = new Image(getClass().getResourceAsStream("GAME OVER.png"));
-  ImageView imageView = new ImageView(tankImg);
+  Image gameOverImg =
+      new Image(getClass().getResourceAsStream("GAME OVER.png"));
+  ImageView gameOverView = new ImageView(gameOverImg);
+
+  Rectangle pauseBG = new Rectangle(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.BLACK);
 
   /**
    * random map and GUI
    */
   private void initContent() {
-    Rectangle bg = new Rectangle(1020, 750, Color.BLACK);
+    Rectangle bg = new Rectangle(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.BLACK);
+    pauseBG.setOpacity(0.5);
     HealthLabel = new Label("Health: 100");
     ScoreLabel = new Label("Score: 0");
     Font font = new Font(25);
@@ -102,40 +116,36 @@ public class Game {
   }
 
   /*
-   * 1 - normal mode 
-   * else - autoplay
+   * 
    */
-  private void update(int mode) {
-    if (mode == 1) {
+  private void update() {
+    if (gameMode == "Normal") {
       Character.setCooldown();
       if (isPressed(KeyCode.UP)) {
         player.setScaleX(1);
         player.animation.play();
-        player.moveY(-3);
+        player.moveY(-movementSpeed);
         player.setRotate(270);
         Character.setCurrentAxis(1);
         Music.activateEngineSound(true);
-      }
-      else if (isPressed(KeyCode.DOWN)) {
+      } else if (isPressed(KeyCode.DOWN)) {
         player.setScaleX(1);
         player.animation.play();
-        player.moveY(3);
+        player.moveY(movementSpeed);
         player.setRotate(90);
         Character.setCurrentAxis(2);
         Music.activateEngineSound(true);
-      }
-      else if (isPressed(KeyCode.LEFT)) {
+      } else if (isPressed(KeyCode.LEFT)) {
         player.setScaleX(-1);
         player.animation.play();
-        player.moveX(-3);
+        player.moveX(-movementSpeed);
         player.setRotate(0);
         Character.setCurrentAxis(3);
         Music.activateEngineSound(true);
-      }
-      else if (isPressed(KeyCode.RIGHT)) {
+      } else if (isPressed(KeyCode.RIGHT)) {
         player.setScaleX(1);
         player.animation.play();
-        player.moveX(3);
+        player.moveX(movementSpeed);
         player.setRotate(0);
         Character.setCurrentAxis(4);
         Music.activateEngineSound(true);
@@ -146,35 +156,41 @@ public class Game {
             player.getTranslateY(), "Player"));
         gameRoot.getChildren().add(shells.get(shells.size() - 1));
         Music.shot();
-      }
-      else if (isPressed(KeyCode.ESCAPE)) {
-        // pause();
+      } else if (isPressed(KeyCode.ESCAPE)) {
+        pause();
       }
     } else {
       autoPlayer.randomMove();
       if (autoPlayer.getDy() == -1) {
         autoPlayer.setScaleX(1);
         autoPlayer.animation.play();
-        autoPlayer.moveY(-3);
+        autoPlayer.moveY(-movementSpeed);
         autoPlayer.setRotate(270);
+        Music.activateEngineSound(true);
       }
       if (autoPlayer.getDy() == 1) {
         autoPlayer.setScaleX(1);
         autoPlayer.animation.play();
-        autoPlayer.moveY(3);
+        autoPlayer.moveY(movementSpeed);
         autoPlayer.setRotate(90);
       }
       if (autoPlayer.getDx() == -1) {
         autoPlayer.setScaleX(-1);
         autoPlayer.animation.play();
-        autoPlayer.moveX(-3);
+        autoPlayer.moveX(-movementSpeed);
         autoPlayer.setRotate(0);
       }
       if (autoPlayer.getDx() == 1) {
         autoPlayer.setScaleX(1);
         autoPlayer.animation.play();
-        autoPlayer.moveX(3);
+        autoPlayer.moveX(movementSpeed);
         autoPlayer.setRotate(0);
+      }
+      if (autoPlayer.setShootTimer() == 1) {
+        shells.add(new Shell(autoPlayer.getShotAxis(),
+            autoPlayer.getTranslateX(), autoPlayer.getTranslateY(), "Player"));
+        gameRoot.getChildren().add(shells.get(shells.size() - 1));
+        Music.shot();
       }
     }
   }
@@ -191,25 +207,25 @@ public class Game {
       if (enemies.get(i).getDy() == -1) {
         enemies.get(i).setScaleX(1);
         enemies.get(i).animation.play();
-        enemies.get(i).moveY(-3);
+        enemies.get(i).moveY(-movementSpeed);
         enemies.get(i).setRotate(270);
       }
       if (enemies.get(i).getDy() == 1) {
         enemies.get(i).setScaleX(1);
         enemies.get(i).animation.play();
-        enemies.get(i).moveY(3);
+        enemies.get(i).moveY(movementSpeed);
         enemies.get(i).setRotate(90);
       }
       if (enemies.get(i).getDx() == -1) {
         enemies.get(i).setScaleX(-1);
         enemies.get(i).animation.play();
-        enemies.get(i).moveX(-3);
+        enemies.get(i).moveX(-movementSpeed);
         enemies.get(i).setRotate(0);
       }
       if (enemies.get(i).getDx() == 1) {
         enemies.get(i).setScaleX(1);
         enemies.get(i).animation.play();
-        enemies.get(i).moveX(3);
+        enemies.get(i).moveX(movementSpeed);
         enemies.get(i).setRotate(0);
       }
     }
@@ -246,8 +262,8 @@ public class Game {
               .intersects(enemies.get(j).getBoundsInParent())) {
             gameRoot.getChildren().remove(shells.get(i));
             shells.remove(shells.get(i));
-            // "1" that means, that health <= 0
-            if (enemies.get(j).updateHealth(50) == 1) {
+            // "1" - that means, that health <= 0
+            if (enemies.get(j).updateHealth(damage) == 1) {
               gameRoot.getChildren().remove(enemies.get(j));
               enemies.remove(enemies.get(j));
               Music.tankExplosion();
@@ -260,19 +276,34 @@ public class Game {
           }
         }
       } else {
-        if (shells.get(i).getBoundsInParent()
-            .intersects(player.getBoundsInParent())) {
-          gameRoot.getChildren().remove(shells.get(i));
-          shells.remove(shells.get(i));
-          // if true - gameover
-          if (player.updateHealth(50) == 1) {
-            gameRoot.getChildren().remove(player);
-            Music.tankExplosion();
-            gameRoot.getChildren().add(imageView);
-            timer.stop();
+        if (gameMode == "Normal") {
+          if (shells.get(i).getBoundsInParent()
+              .intersects(player.getBoundsInParent())) {
+            gameRoot.getChildren().remove(shells.get(i));
+            shells.remove(shells.get(i));
+            // if true - gameover
+            if (player.updateHealth(damage) == 1) {
+              gameRoot.getChildren().remove(player);
+              Music.tankExplosion();
+              gameOver();
+            }
+            HealthLabel.setText("Health: " + player.health);
+            Music.tankHit();
           }
-          HealthLabel.setText("Health: " + player.health);
-          Music.tankHit();
+        } else if (gameMode == "Auto") {
+          if (shells.get(i).getBoundsInParent()
+              .intersects(autoPlayer.getBoundsInParent())) {
+            gameRoot.getChildren().remove(shells.get(i));
+            shells.remove(shells.get(i));
+            // if true - gameover
+            if (autoPlayer.updateHealth(damage) == 1) {
+              gameRoot.getChildren().remove(autoPlayer);
+              Music.tankExplosion();
+              gameOver();
+            }
+            HealthLabel.setText("Health: " + autoPlayer.health);
+            Music.tankHit();
+          }
         }
       }
     }
@@ -283,15 +314,14 @@ public class Game {
   }
 
 
-  public void startGame(Stage primaryStage, int mode) {
-    Scene scene = new Scene(appRoot, 1020, 750);
+  public void startGame(Stage primaryStage) {
+    Scene scene = new Scene(appRoot, Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT);
     scene.setFill(Color.BLACK);
     primaryStage.setScene(scene);
-    primaryStage.show();
     enemies = new ArrayList<Enemy>();
     shells = new ArrayList<Shell>();
     initContent();
-    if (mode == 1) {
+    if (gameMode == "Normal") {
       player = new Character();
       enemies.add(new Enemy());
       gameRoot.getChildren().add(player);
@@ -310,18 +340,18 @@ public class Game {
     timer = new AnimationTimer() {
       @Override
       public void handle(long now) {
-        update(mode);
+        update();
         updateBot();
         updateShell();
         checkHit();
-        if (enemies.size() <= 3) {
+        if (enemies.size() < maxAmountOfBots) {
           // random bot spawn. depends on spawnSpeed
           if ((spawn.addNewEnemy()) == true) {
             enemies.add(new Enemy());
             gameRoot.getChildren().add(enemies.get(enemies.size() - 1));
           }
         }
-        //if player movement == 0
+        // if player movement == 0
         if (Character.getCurrentAxis() == 0)
           Music.activateEngineSound(false);
         Character.setCurrentAxis(0);
@@ -331,11 +361,40 @@ public class Game {
 
   }
 
-  /*
-   * public void pause() { timer.stop(); // menu MenuItem cont = new MenuItem("ÏÐÎÄÎËÆÈÒÜ");
-   * MenuItem exitGame = new MenuItem("ÂÛÕÎÄ"); SubMenu pauseMenu = new SubMenu(cont, exitGame);
-   * cont.setOnMouseClicked(event -> { getChildren().remove(pauseMenu); timer.start(); });
-   * exitGame.setOnMouseClicked(event -> { System.exit(0); }); getChildren().add(pauseMenu); }
-   */
+  public void pause() {
+    timer.stop();
+    Music.activateEngineSound(false);
+    MenuItem cont = new MenuItem("ÏÐÎÄÎËÆÈÒÜ");
+    MenuItem mainMenu = new MenuItem("ÃËÀÂÍÎÅ ÌÅÍÞ");
+    MenuItem exitGame = new MenuItem("ÂÛÕÎÄ");
+    SubMenu pauseMenu = new SubMenu(cont, mainMenu, exitGame);
+    cont.setOnMouseClicked(event -> {
+      gameRoot.getChildren().removeAll(pauseBG, pauseMenu);
+      timer.start();
+    });
+    mainMenu.setOnMouseClicked(event -> {
+      //
+    });
+    exitGame.setOnMouseClicked(event -> {
+      System.exit(0);
+    });
+    gameRoot.getChildren().addAll(pauseBG, pauseMenu);
+  }
+
+  public void gameOver() {
+    timer.stop();
+    Music.activateEngineSound(false);
+    MenuItem mainMenu = new MenuItem("ÃËÀÂÍÎÅ ÌÅÍÞ");
+    MenuItem exitGame = new MenuItem("ÂÛÕÎÄ");
+    SubMenu gameOverMenu = new SubMenu(mainMenu, exitGame);
+    mainMenu.setOnMouseClicked(event -> {
+      //
+    });
+    exitGame.setOnMouseClicked(event -> {
+      System.exit(0);
+    });
+    gameRoot.getChildren().addAll(gameOverView, gameOverMenu);
+  }
+  
 }
 

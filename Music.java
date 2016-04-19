@@ -9,20 +9,20 @@ public class Music {
   static MediaPlayer mediaplayer;
   static MediaPlayer mediaplayer2;
   static MediaPlayer engineSound;
-  static AudioClip test;
-  static AudioClip backSound;
+  static AudioClip enterSound;
+  static AudioClip returnSound;
   static AudioClip shot;
   static AudioClip wallhit;
   static AudioClip tankhit;
   static AudioClip tankexplosion;
 
-  public static void initSound() {
+  public void initSound() {
     Media gameMusicFile = new Media(
-        "file:///C:/Users/FerrariHD/workspace/Test/bin/AnOrangePlanet(loop).wav");
+        getClass().getResource("AnOrangePlanet(loop).wav").toString());
     Media musicMainMenuFile = new Media(
-        "file:///C:/Users/FerrariHD/workspace/Test/bin/AnOrangePlanet-Percussion.wav");
+        getClass().getResource("AnOrangePlanet-Percussion.wav").toString());
     Media engineOneFile =
-        new Media("file:///C:/Users/FerrariHD/workspace/Test/bin/engine.wav");
+        new Media(getClass().getResource("engine.wav").toString());
 
     mediaplayer = new MediaPlayer(musicMainMenuFile);
     mediaplayer.setVolume(0.7);
@@ -36,28 +36,23 @@ public class Music {
     engineSound.setVolume(1);
     engineSound.setCycleCount(MediaPlayer.INDEFINITE);
 
-    test = new AudioClip(
-        "file:///C:/Users/FerrariHD/workspace/Test/bin/enter.wav");
-    test.setVolume(0.3);
+    enterSound = new AudioClip(getClass().getResource("enter.wav").toString());
+    enterSound.setVolume(0.3);
 
-    backSound =
-        new AudioClip("file:///C:/Users/FerrariHD/workspace/Test/bin/esc.wav");
-    backSound.setVolume(0.3);
+    returnSound = new AudioClip(getClass().getResource("esc.wav").toString());
+    returnSound.setVolume(0.3);
 
-    shot =
-        new AudioClip("file:///C:/Users/FerrariHD/workspace/Test/bin/shot.wav");
+    shot = new AudioClip(getClass().getResource("shot.wav").toString());
     shot.setVolume(1);
 
-    wallhit = new AudioClip(
-        "file:///C:/Users/FerrariHD/workspace/Test/bin/wallHit2.wav");
+    wallhit = new AudioClip(getClass().getResource("wallHit2.wav").toString());
     wallhit.setVolume(0.5);
 
-    tankhit = new AudioClip(
-        "file:///C:/Users/FerrariHD/workspace/Test/bin/tankHit.wav");
+    tankhit = new AudioClip(getClass().getResource("tankHit.wav").toString());
     tankhit.setVolume(0.8);
 
-    tankexplosion = new AudioClip(
-        "file:///C:/Users/FerrariHD/workspace/Test/bin/tankExplosion.wav");
+    tankexplosion =
+        new AudioClip(getClass().getResource("tankExplosion.wav").toString());
     tankexplosion.setVolume(0.5);
   }
 
@@ -70,10 +65,15 @@ public class Music {
         mediaplayer.stop();
         mediaplayer2.play();
         break;
-      case 2:
-        backSound.play();
-        break;
     }
+  }
+
+  public static void enterSound() {
+    enterSound.play();
+  }
+
+  public static void returnSound() {
+    returnSound.play();
   }
 
   public static void shot() {

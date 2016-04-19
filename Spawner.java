@@ -7,7 +7,7 @@ public class Spawner {
 
   public boolean addNewEnemy() {
     spawnTimer++;
-    if (spawnTimer >= 200) {
+    if (spawnTimer >= Game.spawnSpeed) {
       spawnTimer = 0;
       access = ((int) Math.random() * 100) % 3;
       switch (access) {

@@ -5,19 +5,28 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
+  public static int SCREEN_WIDTH = 1020;
+  public static int SCREEN_HEIGHT = 750;
+
+  Music music = new Music();
+
   public static void main(String[] args) {
     launch(args);
   }
-/**
- * Main menu
- */
+
+  /**
+   * Main menu
+   */
   @Override
   public void start(Stage primaryStage) {
-    Music.initSound();
+    music.initSound();
     Music.chooseMusic(0);
     Pane root = new Pane();
     Game game = new Game();
@@ -39,9 +48,23 @@ public class Main extends Application {
     imgLogo.setFitWidth(300);
     imgLogo.setLayoutX(100.5);
     imgLogo.setLayoutY(50);
+
+    /**
+     * particles
+     */
+    Media media = new Media(getClass().getResource("test.mp4").toString());
+    MediaPlayer player = new MediaPlayer(media);
+    player.setCycleCount(MediaPlayer.INDEFINITE);
+    MediaView view = new MediaView(player);
+    view.setScaleX(1.5);
+    view.setScaleY(1.5);
+    view.setOpacity(0.075);
     root.getChildren().add(imgBackGround);
     root.getChildren().add(imgRectangle);
     root.getChildren().add(imgLogo);
+    root.getChildren().add(view);
+
+    player.play();
 
     MenuItem newGame = new MenuItem("НОВАЯ ИГРА");
     MenuItem keys = new MenuItem("УПРАВЛЕНИЕ");
@@ -69,43 +92,64 @@ public class Main extends Application {
 
     MenuBox menuBox = new MenuBox(mainMenu);
 
-    newGame.setOnMouseClicked(event -> menuBox.setSubMenu(newGameMenu));
-    newGame.setOnMousePressed(event -> Music.chooseMusic(2));
+    newGame.setOnMouseClicked(event -> {
+      menuBox.setSubMenu(newGameMenu);
+      Music.enterSound.play();
+    });
     NG1.setOnMouseClicked(event -> {
       root.getChildren().clear();
-      game.startGame(primaryStage, 1);
+      Game.gameMode = "Normal";
+      game.startGame(primaryStage);
     });
     NG2.setOnMouseClicked(event -> {
       root.getChildren().clear();
-      game.startGame(primaryStage, 2);
+      Game.gameMode = "Auto";
+      game.startGame(primaryStage);
     });
-    options.setOnMouseClicked(event -> menuBox.setSubMenu(optionsMenu));
-    options.setOnMousePressed(event -> Music.chooseMusic(2));
+    options.setOnMouseClicked(event -> {
+      menuBox.setSubMenu(optionsMenu);
+      Music.enterSound.play();
+    });
     exitGame.setOnMouseClicked(event -> System.exit(0));
-    optionsBack.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
-    optionsBack.setOnMousePressed(event -> Music.chooseMusic(2));
-    NGBack.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
-    NGBack.setOnMousePressed(event -> Music.chooseMusic(2));
-    sound.setOnMouseClicked(event -> menuBox.setSubMenu(volume));
-    sound.setOnMousePressed(event -> Music.chooseMusic(2));
-    VBack.setOnMouseClicked(event -> menuBox.setSubMenu(optionsMenu));
-    VBack.setOnMousePressed(event -> Music.chooseMusic(2));
-    difficult.setOnMouseClicked(event -> menuBox.setSubMenu(dif));
-    difficult.setOnMousePressed(event -> Music.chooseMusic(2));
-    dif1.setOnMouseClicked(event -> game.spawnSpeed = 200);
-    dif1.setOnMousePressed(event -> Music.chooseMusic(2));
-    dif2.setOnMouseClicked(event -> game.spawnSpeed = 100);
-    dif2.setOnMousePressed(event -> Music.chooseMusic(2));
-    difBack.setOnMouseClicked(event -> menuBox.setSubMenu(optionsMenu));
-    difBack.setOnMousePressed(event -> Music.chooseMusic(2));
+    optionsBack.setOnMouseClicked(event -> {
+      menuBox.setSubMenu(mainMenu);
+      Music.returnSound.play();
+    });
+    NGBack.setOnMouseClicked(event -> {
+      menuBox.setSubMenu(mainMenu);
+      Music.returnSound.play();
+    });
+    sound.setOnMouseClicked(event -> {
+      menuBox.setSubMenu(volume);
+      Music.enterSound.play();
+    });
+    VBack.setOnMouseClicked(event -> {
+      menuBox.setSubMenu(optionsMenu);
+      Music.returnSound.play();
+    });
+    difficult.setOnMouseClicked(event -> {
+      menuBox.setSubMenu(dif);
+      Music.enterSound.play();
+    });
+    dif1.setOnMouseClicked(event -> {
+      game.spawnSpeed = 200;
+      Music.enterSound.play();
+    });
+    dif2.setOnMouseClicked(event -> {
+      game.spawnSpeed = 100;
+      Music.enterSound.play();
+    });
+    difBack.setOnMouseClicked(event -> {
+      menuBox.setSubMenu(optionsMenu);
+      Music.returnSound.play();
+    });
     root.getChildren().addAll(menuBox);
 
-    Scene scene = new Scene(root, 1020, 750);
+    Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     primaryStage.setTitle("BattleCity Survival");
     primaryStage.setScene(scene);
     primaryStage.show();
-
   }
 }
 
