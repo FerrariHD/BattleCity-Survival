@@ -102,9 +102,10 @@ public class Music {
   }
 
   public static void activateEngineSound(boolean status) {
-    if (status == true)
+    if (status == true) {
       engineSound.play();
-    else
+    } else {
       engineSound.stop();
+    }
   }
 }

@@ -32,8 +32,9 @@ public class Enemy extends Pane {
     if (cooldown <= 0) {
       cooldown = 100;
       return 1;
-    } else
+    } else {
       return 0;
+    }
   }
 
   public void randomMove() {
@@ -78,10 +79,11 @@ public class Enemy extends Pane {
 
   public int updateHealth(int damage) {
     health -= damage;
-    if (health <= 0)
+    if (health <= 0) {
       return 1;
-    else
+    } else {
       return 0;
+    }
   }
 
   public Enemy() {

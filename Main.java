@@ -32,9 +32,13 @@ public class Main extends Application {
    */
   @Override
   public void start(Stage primaryStage) {
-    // load all sounds
+    /**
+     *  load all sounds
+     */
     music.initSound();
-    // choose mainMenuMusic
+    /**
+     *  choose mainMenuMusic
+     */
     Music.chooseMusic(0);
     Pane root = new Pane();
     Game game = new Game();

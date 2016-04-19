@@ -113,7 +113,9 @@ public class Game {
       }
 
     }
-    // choose GameMusic
+    /**
+     * choose GameMusic
+     */
     Music.chooseMusic(1);
     appRoot.getChildren().addAll(gameRoot);
   }
@@ -269,7 +271,9 @@ public class Game {
               .intersects(enemies.get(j).getBoundsInParent())) {
             gameRoot.getChildren().remove(shells.get(i));
             shells.remove(shells.get(i));
-            // "1" - that means, that health <= 0
+            /**
+             * "1" - that means, that health <= 0
+             */
             if (enemies.get(j).updateHealth(damage) == 1) {
               gameRoot.getChildren().remove(enemies.get(j));
               enemies.remove(enemies.get(j));
@@ -288,7 +292,9 @@ public class Game {
               .intersects(player.getBoundsInParent())) {
             gameRoot.getChildren().remove(shells.get(i));
             shells.remove(shells.get(i));
-            // if true - gameover
+            /**
+             * if true - gameover
+             */
             if (player.updateHealth(damage) == 1) {
               gameRoot.getChildren().remove(player);
               Music.tankExplosion();
@@ -302,7 +308,9 @@ public class Game {
               .intersects(autoPlayer.getBoundsInParent())) {
             gameRoot.getChildren().remove(shells.get(i));
             shells.remove(shells.get(i));
-            // if true - gameover
+            /**
+             * if true - gameover
+             */
             if (autoPlayer.updateHealth(damage) == 1) {
               gameRoot.getChildren().remove(autoPlayer);
               Music.tankExplosion();
@@ -352,15 +360,20 @@ public class Game {
         updateShell();
         checkHit();
         if (enemies.size() < maxAmountOfBots) {
-          // random bot spawn. depends on spawnSpeed
+          /**
+           * random bot spawn. depends on spawnSpeed
+           */
           if ((spawn.addNewEnemy()) == true) {
             enemies.add(new Enemy());
             gameRoot.getChildren().add(enemies.get(enemies.size() - 1));
           }
         }
-        // if player movement == 0
-        if (Character.getCurrentAxis() == 0)
+        /**
+         * if player movement == 0
+         */
+        if (Character.getCurrentAxis() == 0) {
           Music.activateEngineSound(false);
+        }
         Character.setCurrentAxis(0);
       }
     };
@@ -383,7 +396,7 @@ public class Game {
       timer.start();
     });
     mainMenu.setOnMouseClicked(event -> {
-      //
+
     });
     exitGame.setOnMouseClicked(event -> {
       System.exit(0);
@@ -401,7 +414,7 @@ public class Game {
     MenuItem exitGame = new MenuItem("бшунд");
     SubMenu gameOverMenu = new SubMenu(mainMenu, exitGame);
     mainMenu.setOnMouseClicked(event -> {
-      //
+
     });
     exitGame.setOnMouseClicked(event -> {
       System.exit(0);

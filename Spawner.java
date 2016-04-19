@@ -31,8 +31,9 @@ public class Spawner {
           access = 0;
           break;
       }
-      if (access == 1)
+      if (access == 1) {
         return true;
+      }
     }
     return false;
   }
