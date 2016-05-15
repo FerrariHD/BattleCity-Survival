@@ -1,6 +1,7 @@
 package game;
 
 
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,8 +14,6 @@ import javafx.scene.layout.Pane;
  *
  */
 public class Block extends Pane {
-  Image blocksImg = new Image(getClass()
-      .getResourceAsStream("NES_-_Battle_City_-_General_Sprites.png"));
   ImageView block;
 
   public enum BlockType {
@@ -27,7 +26,7 @@ public class Block extends Pane {
    * @param x = setTranslateX
    * @param y = setTranslateY
    */
-  public Block(BlockType blockType, int x, int y) {
+  public Block(BlockType blockType, int x, int y, Image blocksImg) {
     block = new ImageView(blocksImg);
     block.setFitWidth(Game.BLOCK_SIZE);
     block.setFitHeight(Game.BLOCK_SIZE);

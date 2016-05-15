@@ -1,5 +1,6 @@
 package game;
 
+
 /**
  * start map. "R" = random block
  * 

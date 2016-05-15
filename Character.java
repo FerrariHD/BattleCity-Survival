@@ -1,7 +1,9 @@
 package game;
 
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -17,6 +19,7 @@ public class Character extends Pane {
   Image tankImg = new Image(getClass()
       .getResourceAsStream("NES_-_Battle_City_-_General_Sprites.png"));
   ImageView imageView = new ImageView(tankImg);
+  
   int width = 25;
   int height = 25;
   int health = 100;
@@ -54,6 +57,9 @@ public class Character extends Pane {
   }
 
   public Character() {
+    Glow glow = new Glow();
+    glow.setLevel(0.5);
+    imageView.setEffect(glow);
     imageView.setFitHeight(25);
     imageView.setFitWidth(25);
     imageView.setViewport(new Rectangle2D(224, 32, width, height));

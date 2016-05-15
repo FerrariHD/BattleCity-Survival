@@ -1,5 +1,6 @@
 package game;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,6 +8,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -36,9 +38,11 @@ public class Game {
   public Enemy autoPlayer;
   public Spawner spawn = new Spawner();
 
-  public int maxAmountOfBots = 3;
-
   public int damage = 50;
+
+  public char gameModeReplay = '0';
+
+  private ReplaysController results;
 
   public int movementSpeed = 3;
 
@@ -67,6 +71,8 @@ public class Game {
    * random map and GUI
    */
   private void initContent() {
+    Image blocksImg = new Image(getClass()
+        .getResourceAsStream("NES_-_Battle_City_-_General_Sprites.png"));
     Rectangle bg =
         new Rectangle(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.BLACK);
     pauseBG.setOpacity(0.5);
@@ -79,39 +85,89 @@ public class Game {
     HealthLabel.setTextFill(Color.RED);
     ScoreLabel.setTranslateY(25);
     gameRoot.getChildren().addAll(bg, HealthLabel, ScoreLabel);
-    for (int i = 0; i < Map.level.length; i++) {
-      String line = Map.level[i];
-      for (int j = 0; j < line.length(); j++) {
-        if (line.charAt(j) == 'B') {
-          new Block(Block.BlockType.WALL, j * BLOCK_SIZE, i * BLOCK_SIZE);
-        } else if (line.charAt(j) == 'R') {
-          randBlock();
-          switch (newBlock) {
-            case 1:
-              new Block(Block.BlockType.WATER, j * BLOCK_SIZE, i * BLOCK_SIZE);
-              break;
-            case 2:
-              new Block(Block.BlockType.WALL, j * BLOCK_SIZE, i * BLOCK_SIZE);
-              break;
-            case 3:
-              new Block(Block.BlockType.BRICK, j * BLOCK_SIZE, i * BLOCK_SIZE);
-              break;
-            case 4:
-              new Block(Block.BlockType.GRASS, j * BLOCK_SIZE, i * BLOCK_SIZE);
-              break;
-            case 5:
-              new Block(Block.BlockType.BRICK, j * BLOCK_SIZE, i * BLOCK_SIZE);
-              break;
-            case 6:
-              new Block(Block.BlockType.GRASS, j * BLOCK_SIZE, i * BLOCK_SIZE);
-              break;
-            case 7:
-              new Block(Block.BlockType.WATER, j * BLOCK_SIZE, i * BLOCK_SIZE);
-              break;
+    if (gameMode != "Replay") {
+      for (int i = 0; i < Map.level.length; i++) {
+        String line = Map.level[i];
+        for (int j = 0; j < line.length(); j++) {
+          if (line.charAt(j) == ' ') {
+            results.saveChar(' ');
+            continue;
+          }
+          if (line.charAt(j) == 'B') {
+            new Block(Block.BlockType.WALL, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                blocksImg);
+            results.saveChar('V');
+          } else if (line.charAt(j) == 'R') {
+            randBlock();
+            switch (newBlock) {
+              case 1:
+                new Block(Block.BlockType.WATER, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                    blocksImg);
+                results.saveChar('W');
+                break;
+              case 2:
+                new Block(Block.BlockType.WALL, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                    blocksImg);
+                results.saveChar('V');
+                break;
+              case 3:
+                new Block(Block.BlockType.BRICK, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                    blocksImg);
+                results.saveChar('B');
+                break;
+              case 4:
+                new Block(Block.BlockType.GRASS, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                    blocksImg);
+                results.saveChar('G');
+                break;
+              case 5:
+                new Block(Block.BlockType.BRICK, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                    blocksImg);
+                results.saveChar('B');
+                break;
+              case 6:
+                new Block(Block.BlockType.GRASS, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                    blocksImg);
+                results.saveChar('G');
+                break;
+              case 7:
+                new Block(Block.BlockType.WATER, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                    blocksImg);
+                results.saveChar('W');
+                break;
+              default:
+                results.saveChar(' ');
+            }
           }
         }
       }
 
+    } else {
+      char M;
+      for (int i = 0; i < Map.level.length; i++) {
+        String line = Map.level[i];
+        for (int j = 0; j < line.length(); j++) {
+          M = results.loadChar();
+          switch (M) {
+            case 'W':
+              new Block(Block.BlockType.WATER, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                  blocksImg);
+              break;
+            case 'V':
+              new Block(Block.BlockType.WALL, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                  blocksImg);
+              break;
+            case 'B':
+              new Block(Block.BlockType.BRICK, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                  blocksImg);
+              break;
+            case 'G':
+              new Block(Block.BlockType.GRASS, j * BLOCK_SIZE, i * BLOCK_SIZE,
+                  blocksImg);
+              break;
+          }
+        }
+      }
     }
     /**
      * choose GameMusic
@@ -137,6 +193,8 @@ public class Game {
         player.setRotate(270);
         Character.setCurrentAxis(1);
         Music.activateEngineSound(true);
+        results.saveChar('U');
+        return;
       } else if (isPressed(KeyCode.DOWN)) {
         player.setScaleX(1);
         player.animation.play();
@@ -144,6 +202,8 @@ public class Game {
         player.setRotate(90);
         Character.setCurrentAxis(2);
         Music.activateEngineSound(true);
+        results.saveChar('D');
+        return;
       } else if (isPressed(KeyCode.LEFT)) {
         player.setScaleX(-1);
         player.animation.play();
@@ -151,6 +211,8 @@ public class Game {
         player.setRotate(0);
         Character.setCurrentAxis(3);
         Music.activateEngineSound(true);
+        results.saveChar('L');
+        return;
       } else if (isPressed(KeyCode.RIGHT)) {
         player.setScaleX(1);
         player.animation.play();
@@ -158,6 +220,8 @@ public class Game {
         player.setRotate(0);
         Character.setCurrentAxis(4);
         Music.activateEngineSound(true);
+        results.saveChar('R');
+        return;
       }
       if (isPressed(KeyCode.SPACE) && Character.getCooldown() <= 0) {
         Character.cooldown = 100;
@@ -165,9 +229,13 @@ public class Game {
             player.getTranslateY(), "Player"));
         gameRoot.getChildren().add(shells.get(shells.size() - 1));
         Music.shot();
+        results.saveChar('S');
+        results.saveChar((char)Character.shotAxis);
+        return;
       } else if (isPressed(KeyCode.ESCAPE)) {
         pause();
       }
+      results.saveChar(' ');
     } else {
       autoPlayer.randomMove();
       if (autoPlayer.getDy() == -1) {
@@ -176,24 +244,28 @@ public class Game {
         autoPlayer.moveY(-movementSpeed);
         autoPlayer.setRotate(270);
         Music.activateEngineSound(true);
+        results.saveChar('U');
       }
       if (autoPlayer.getDy() == 1) {
         autoPlayer.setScaleX(1);
         autoPlayer.animation.play();
         autoPlayer.moveY(movementSpeed);
         autoPlayer.setRotate(90);
+        results.saveChar('D');
       }
       if (autoPlayer.getDx() == -1) {
         autoPlayer.setScaleX(-1);
         autoPlayer.animation.play();
         autoPlayer.moveX(-movementSpeed);
         autoPlayer.setRotate(0);
+        results.saveChar('L');
       }
       if (autoPlayer.getDx() == 1) {
         autoPlayer.setScaleX(1);
         autoPlayer.animation.play();
         autoPlayer.moveX(movementSpeed);
         autoPlayer.setRotate(0);
+        results.saveChar('R');
       }
       if (autoPlayer.setShootTimer() == 1) {
         shells.add(new Shell(autoPlayer.getShotAxis(),
@@ -218,24 +290,150 @@ public class Game {
         enemies.get(i).animation.play();
         enemies.get(i).moveY(-movementSpeed);
         enemies.get(i).setRotate(270);
+        results.saveChar('U');
       }
       if (enemies.get(i).getDy() == 1) {
         enemies.get(i).setScaleX(1);
         enemies.get(i).animation.play();
         enemies.get(i).moveY(movementSpeed);
         enemies.get(i).setRotate(90);
+        results.saveChar('D');
       }
       if (enemies.get(i).getDx() == -1) {
         enemies.get(i).setScaleX(-1);
         enemies.get(i).animation.play();
         enemies.get(i).moveX(-movementSpeed);
         enemies.get(i).setRotate(0);
+        results.saveChar('L');
       }
       if (enemies.get(i).getDx() == 1) {
         enemies.get(i).setScaleX(1);
         enemies.get(i).animation.play();
         enemies.get(i).moveX(movementSpeed);
         enemies.get(i).setRotate(0);
+        results.saveChar('R');
+      }
+    }
+  }
+
+  private void updateReplay() {
+    char D = results.loadChar();
+    if (gameModeReplay == 'N') {
+      if (D == 'U') {
+        player.setScaleX(1);
+        player.animation.play();
+        player.moveY(-movementSpeed);
+        player.setRotate(270);
+        Music.activateEngineSound(true);
+      }
+      if (D == 'D') {
+        player.setScaleX(1);
+        player.animation.play();
+        player.moveY(movementSpeed);
+        player.setRotate(90);
+        Music.activateEngineSound(true);
+      }
+      if (D == 'L') {
+        player.setScaleX(-1);
+        player.animation.play();
+        player.moveX(-movementSpeed);
+        player.setRotate(0);
+        Music.activateEngineSound(true);
+      }
+      if (D == 'R') {
+        player.setScaleX(1);
+        player.animation.play();
+        player.moveX(movementSpeed);
+        player.setRotate(0);
+        Music.activateEngineSound(true);
+      }
+      if (D == 'S') {
+        char C = results.loadChar();
+        shells.add(new Shell(C, player.getTranslateX(),
+            player.getTranslateY(), "Player"));
+        gameRoot.getChildren().add(shells.get(shells.size() - 1));
+        Music.shot();
+      } else if (isPressed(KeyCode.ESCAPE)) {
+        pause();
+      }
+    } else {
+      if (D == 'U') {
+        autoPlayer.setScaleX(1);
+        autoPlayer.animation.play();
+        autoPlayer.moveY(-movementSpeed);
+        autoPlayer.setRotate(270);
+        autoPlayer.shotAxis = 1;
+        Music.activateEngineSound(true);
+      }
+      if (D == 'D') {
+        autoPlayer.setScaleX(1);
+        autoPlayer.animation.play();
+        autoPlayer.moveY(movementSpeed);
+        autoPlayer.setRotate(90);
+        autoPlayer.shotAxis = 2;
+        Music.activateEngineSound(true);
+      }
+      if (D == 'L') {
+        autoPlayer.setScaleX(-1);
+        autoPlayer.animation.play();
+        autoPlayer.moveX(-movementSpeed);
+        autoPlayer.setRotate(0);
+        autoPlayer.shotAxis = 3;
+        Music.activateEngineSound(true);
+      }
+      if (D == 'R') {
+        autoPlayer.setScaleX(1);
+        autoPlayer.animation.play();
+        autoPlayer.moveX(movementSpeed);
+        autoPlayer.setRotate(0);
+        autoPlayer.shotAxis = 4;
+        Music.activateEngineSound(true);
+      }
+      if (autoPlayer.setShootTimer() == 1) {
+        shells.add(new Shell(autoPlayer.getShotAxis(),
+            autoPlayer.getTranslateX(), autoPlayer.getTranslateY(), "Player"));
+        gameRoot.getChildren().add(shells.get(shells.size() - 1));
+        Music.shot();
+      }
+    }
+  }
+
+  private void updateBotReplay() {
+    for (int i = 0; i < enemies.size(); i++) {
+      if (enemies.get(i).setShootTimer() == 1) {
+        shells.add(new Shell(enemies.get(i).getShotAxis(),
+            enemies.get(i).getTranslateX(), enemies.get(i).getTranslateY(),
+            "Enemy"));
+        gameRoot.getChildren().add(shells.get(shells.size() - 1));
+      }
+      char D = results.loadChar();
+      if (D == 'U') {
+        enemies.get(i).setScaleX(1);
+        enemies.get(i).animation.play();
+        enemies.get(i).moveY(-movementSpeed);
+        enemies.get(i).setRotate(270);
+        enemies.get(i).shotAxis = 1;
+      }
+      if (D == 'D') {
+        enemies.get(i).setScaleX(1);
+        enemies.get(i).animation.play();
+        enemies.get(i).moveY(movementSpeed);
+        enemies.get(i).setRotate(90);
+        enemies.get(i).shotAxis = 2;
+      }
+      if (D == 'L') {
+        enemies.get(i).setScaleX(-1);
+        enemies.get(i).animation.play();
+        enemies.get(i).moveX(-movementSpeed);
+        enemies.get(i).setRotate(0);
+        enemies.get(i).shotAxis = 3;
+      }
+      if (D == 'R') {
+        enemies.get(i).setScaleX(1);
+        enemies.get(i).animation.play();
+        enemies.get(i).moveX(movementSpeed);
+        enemies.get(i).setRotate(0);
+        enemies.get(i).shotAxis = 4;
       }
     }
   }
@@ -287,7 +485,7 @@ public class Game {
           }
         }
       } else {
-        if (gameMode == "Normal") {
+        if (gameMode == "Normal" || gameModeReplay == 'N') {
           if (shells.get(i).getBoundsInParent()
               .intersects(player.getBoundsInParent())) {
             gameRoot.getChildren().remove(shells.get(i));
@@ -303,7 +501,7 @@ public class Game {
             HealthLabel.setText("Health: " + player.health);
             Music.tankHit();
           }
-        } else if (gameMode == "Auto") {
+        } else if (gameMode == "Auto" || gameModeReplay == 'A') {
           if (shells.get(i).getBoundsInParent()
               .intersects(autoPlayer.getBoundsInParent())) {
             gameRoot.getChildren().remove(shells.get(i));
@@ -329,23 +527,62 @@ public class Game {
   }
 
 
-  public void startGame(Stage primaryStage) {
+  public void startGame(Stage primaryStage, ReplaysController replay) {
+    if (gameMode != "Replay") {
+      this.results = new ReplaysController();
+    } else {
+      this.results = replay;
+    }
+
+    if (gameMode != "Replay") {
+      results.createResultFile();
+      if (gameMode == "Normal") {
+        results.saveChar('N');
+      } else if (gameMode == "Auto") {
+        results.saveChar('A');
+      }
+    }
+    if (gameMode == "Replay") {
+      gameModeReplay = results.loadChar();
+    }
+
     Scene scene = new Scene(appRoot, Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT);
     scene.setFill(Color.BLACK);
     primaryStage.setScene(scene);
     enemies = new ArrayList<Enemy>();
     shells = new ArrayList<Shell>();
     initContent();
-    if (gameMode == "Normal") {
+    if (gameMode == "Auto") {
+      autoPlayer = new Enemy();
+      Glow glow = new Glow();
+      glow.setLevel(0.75);
+      autoPlayer.setEffect(glow);
+      autoPlayer.setTranslateX(400);
+      autoPlayer.setTranslateY(690);
+      enemies.add(new Enemy());
+      gameRoot.getChildren().add(autoPlayer);
+      gameRoot.getChildren().add(enemies.get(0));
+    } else if (gameMode == "Normal") {
       player = new Character();
       enemies.add(new Enemy());
       gameRoot.getChildren().add(player);
       gameRoot.getChildren().add(enemies.get(0));
-    } else {
-      autoPlayer = new Enemy();
-      enemies.add(new Enemy());
-      gameRoot.getChildren().add(autoPlayer);
-      gameRoot.getChildren().add(enemies.get(0));
+    }
+    if (gameMode == "Replay") {
+      if (gameModeReplay == 'A') {
+        autoPlayer = new Enemy();
+        Glow glow = new Glow();
+        glow.setLevel(0.75);
+        autoPlayer.setEffect(glow);
+        enemies.add(new Enemy());
+        gameRoot.getChildren().add(autoPlayer);
+        gameRoot.getChildren().add(enemies.get(0));
+      } else {
+        player = new Character();
+        enemies.add(new Enemy());
+        gameRoot.getChildren().add(player);
+        gameRoot.getChildren().add(enemies.get(0));
+      }
     }
     scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
     scene.setOnKeyReleased(event -> {
@@ -355,15 +592,26 @@ public class Game {
     timer = new AnimationTimer() {
       @Override
       public void handle(long now) {
-        update();
-        updateBot();
+        if (gameMode != "Replay") {
+          update();
+          updateBot();
+        } else {
+          updateReplay();
+          updateBotReplay();
+        }
         updateShell();
         checkHit();
-        if (enemies.size() < maxAmountOfBots) {
-          /**
-           * random bot spawn. depends on spawnSpeed
-           */
+        if (gameMode != "Replay") {
           if ((spawn.addNewEnemy()) == true) {
+            enemies.add(new Enemy());
+            gameRoot.getChildren().add(enemies.get(enemies.size() - 1));
+            results.saveChar('n');
+          } else {
+            results.saveChar(' ');
+          }
+        }
+        if (gameMode == "Replay") {
+          if (results.loadChar() == 'n') {
             enemies.add(new Enemy());
             gameRoot.getChildren().add(enemies.get(enemies.size() - 1));
           }
@@ -371,10 +619,12 @@ public class Game {
         /**
          * if player movement == 0
          */
-        if (Character.getCurrentAxis() == 0) {
-          Music.activateEngineSound(false);
+        if (gameMode != "Replay") {
+          if (Character.getCurrentAxis() == 0) {
+            Music.activateEngineSound(false);
+          }
+          Character.setCurrentAxis(0);
         }
-        Character.setCurrentAxis(0);
       }
     };
     timer.start();

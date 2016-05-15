@@ -1,9 +1,8 @@
 package game;
 
+
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -33,73 +32,49 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) {
     /**
-     *  load all sounds
+     * load all sounds
      */
     music.initSound();
     /**
-     *  choose mainMenuMusic
+     * choose mainMenuMusic
      */
     Music.chooseMusic(0);
     Pane root = new Pane();
     Game game = new Game();
 
-    Image imageBackGround = new Image(
-        getClass().getResourceAsStream("wot5years_1024x768_noc_ru.jpg"));
-    ImageView imgBackGround = new ImageView(imageBackGround);
-    imgBackGround.setFitHeight(768);
-    imgBackGround.setFitWidth(1024);
-    Image imageRectangle = new Image(getClass().getResourceAsStream("box.png"));
-    ImageView imgRectangle = new ImageView(imageRectangle);
-    imgRectangle.setFitHeight(1020);
-    imgRectangle.setFitWidth(320);
-    imgRectangle.setLayoutX(90);
-    Image imageLogo =
-        new Image(getClass().getResourceAsStream("MainMenuLogo.png"));
-    ImageView imgLogo = new ImageView(imageLogo);
-    imgLogo.setFitHeight(150);
-    imgLogo.setFitWidth(300);
-    imgLogo.setLayoutX(100.5);
-    imgLogo.setLayoutY(50);
-
     /**
-     * particles
+     * MainMenuBackground (video)
      */
-    Media media = new Media(getClass().getResource("test.mp4").toString());
+    Media media =
+        new Media(getClass().getResource("MainMenuBackground.mp4").toString());
     MediaPlayer particles = new MediaPlayer(media);
     particles.setCycleCount(MediaPlayer.INDEFINITE);
     MediaView view = new MediaView(particles);
-    view.setScaleX(1.5);
-    view.setScaleY(1.5);
-    view.setOpacity(0.075);
-    root.getChildren().add(imgBackGround);
-    root.getChildren().add(imgRectangle);
-    root.getChildren().add(imgLogo);
     root.getChildren().add(view);
     particles.play();
 
     MenuItem newGame = new MenuItem("НОВАЯ ИГРА");
-    MenuItem keys = new MenuItem("УПРАВЛЕНИЕ");
-    MenuItem about = new MenuItem("О ПРОГРАММЕ");
+    MenuItem replay = new MenuItem("РЕПЛЕЙ");
     MenuItem options = new MenuItem("НАСТРОЙКИ");
     MenuItem exitGame = new MenuItem("ВЫХОД");
-    SubMenu mainMenu = new SubMenu(newGame, keys, about, options, exitGame);
-    MenuItem sound = new MenuItem("ЗВУК");
+    SubMenu mainMenu = new SubMenu(newGame, replay, options, exitGame);
+    MenuItem replayStart = new MenuItem("ВОСПРОИЗВЕСТИ");
+    MenuItem replayBack = new MenuItem("НАЗАД");
+    SubMenu replayMenu = new SubMenu(replayStart, replayBack);
     MenuItem difficult = new MenuItem("СЛОЖНОСТЬ");
     MenuItem optionsBack = new MenuItem("НАЗАД");
-    SubMenu optionsMenu = new SubMenu(sound, difficult, optionsBack);
+    SubMenu optionsMenu = new SubMenu(difficult, optionsBack);
     MenuItem NG1 = new MenuItem("ОДИН ИГРОК");
     MenuItem NG2 = new MenuItem("БОТ");
     MenuItem NGBack = new MenuItem("НАЗАД");
     SubMenu newGameMenu = new SubMenu(NG1, NG2, NGBack);
-    MenuItem volume1 = new MenuItem("100%");
-    MenuItem volume2 = new MenuItem("75%");
-    MenuItem volume3 = new MenuItem("50%");
-    MenuItem VBack = new MenuItem("НАЗАД");
-    SubMenu volume = new SubMenu(volume1, volume2, volume3, VBack);
     MenuItem dif1 = new MenuItem("ЛЕГКО");
     MenuItem dif2 = new MenuItem("СЛОЖНО");
     MenuItem difBack = new MenuItem("НАЗАД");
     SubMenu dif = new SubMenu(dif1, dif2, difBack);
+
+    ReplaysController results = new ReplaysController();
+    FileList fileList = new FileList(ReplaysController.folderContent());
 
     MenuBox menuBox = new MenuBox(mainMenu);
 
@@ -110,12 +85,12 @@ public class Main extends Application {
     NG1.setOnMouseClicked(event -> {
       root.getChildren().clear();
       Game.gameMode = "Normal";
-      game.startGame(primaryStage);
+      game.startGame(primaryStage, results);
     });
     NG2.setOnMouseClicked(event -> {
       root.getChildren().clear();
       Game.gameMode = "Auto";
-      game.startGame(primaryStage);
+      game.startGame(primaryStage, results);
     });
     options.setOnMouseClicked(event -> {
       menuBox.setSubMenu(optionsMenu);
@@ -130,12 +105,26 @@ public class Main extends Application {
       menuBox.setSubMenu(mainMenu);
       Music.returnSound.play();
     });
-    sound.setOnMouseClicked(event -> {
-      menuBox.setSubMenu(volume);
+    replay.setOnMouseClicked(event -> {
+      fileList.setFiles(ReplaysController.folderContent());
+      menuBox.setSubMenu(replayMenu);
+      menuBox.setItem(fileList);
       Music.enterSound.play();
     });
-    VBack.setOnMouseClicked(event -> {
-      menuBox.setSubMenu(optionsMenu);
+    replayStart.setOnMouseClicked(event -> {
+      if (fileList.getSelectionModel().isEmpty()) {
+        return;
+      } else {
+        String fileName = fileList.getSelectionModel().getSelectedItem();
+        results.openResultFile(fileName);
+        root.getChildren().clear();
+        Game.gameMode = "Replay";
+        game.startGame(primaryStage, results);
+      }
+    });
+    replayBack.setOnMouseClicked(event -> {
+      menuBox.getChildren().remove(fileList);
+      menuBox.setSubMenu(mainMenu);
       Music.returnSound.play();
     });
     difficult.setOnMouseClicked(event -> {

@@ -1,5 +1,7 @@
 package game;
 
+
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
 /**
@@ -20,5 +22,9 @@ public class MenuBox extends Pane {
     getChildren().remove(MenuBox.subMenu);
     MenuBox.subMenu = subMenu;
     getChildren().add(MenuBox.subMenu);
+  }
+  
+  public void setItem(Node item) {
+    getChildren().add(item);
   }
 }
