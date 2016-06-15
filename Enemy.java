@@ -1,5 +1,6 @@
 package game;
 
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -7,7 +8,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
-
+/**
+ * AI and autoPlayer
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Enemy extends Pane {
   Image tankImg = new Image(getClass()
       .getResourceAsStream("NES_-_Battle_City_-_General_Sprites.png"));
@@ -27,8 +33,9 @@ public class Enemy extends Pane {
     if (cooldown <= 0) {
       cooldown = 100;
       return 1;
-    } else
+    } else {
       return 0;
+    }
   }
 
   public void randomMove() {
@@ -73,10 +80,11 @@ public class Enemy extends Pane {
 
   public int updateHealth(int damage) {
     health -= damage;
-    if (health <= 0)
+    if (health <= 0) {
       return 1;
-    else
+    } else {
       return 0;
+    }
   }
 
   public Enemy() {

@@ -1,16 +1,31 @@
 package game;
 
+
 import javafx.scene.effect.Glow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * shell (red gameObject)
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Shell extends Pane {
 
   private int direction;
   private int shellSpeed = 7;
   private String shotOwner;
 
+  /**
+   * shell constructor
+   * 
+   * @param dir = direction
+   * @param startX = setTranslateX
+   * @param startY = setTranslateY
+   * @param Owner = who has made a shot (player or bot)
+   */
   public Shell(int dir, double startX, double startY, String Owner) {
     shotOwner = Owner;
     direction = dir;

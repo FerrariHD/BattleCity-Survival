@@ -1,5 +1,12 @@
 package game;
 
+
+/**
+ * start map. "R" = random block
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Map {
 
   static String[] level = new String[] {

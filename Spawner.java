@@ -1,13 +1,24 @@
 package game;
 
+
+/**
+ * 
+ * @author FerrariHD
+ *
+ */
 public class Spawner {
 
   private int spawnTimer;
   private int access;
 
+  /**
+   * chance ~66.7%
+   * 
+   * @return
+   */
   public boolean addNewEnemy() {
     spawnTimer++;
-    if (spawnTimer >= 200) {
+    if (spawnTimer >= Game.spawnSpeed) {
       spawnTimer = 0;
       access = ((int) Math.random() * 100) % 3;
       switch (access) {
@@ -21,8 +32,9 @@ public class Spawner {
           access = 0;
           break;
       }
-      if (access == 1)
+      if (access == 1) {
         return true;
+      }
     }
     return false;
   }

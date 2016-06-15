@@ -1,5 +1,6 @@
 package game;
 
+
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Pos;
 import javafx.scene.effect.Glow;
@@ -11,6 +12,12 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+/**
+ * menu buttons
+ * 
+ * @author FerrariHD
+ *
+ */
 public class MenuItem extends StackPane {
   public MenuItem(String name) {
     Glow glow = new Glow();
